@@ -3,6 +3,7 @@ package com.example.myproject3.service;
 import java.util.Optional;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.catalina.servlet4preview.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,17 +30,34 @@ public class WebUserService {
 	WebUserRepository repository;
 	
 	@PostMapping("/api/user/Customer")
-	public Customer createCustomer(@RequestBody Customer customer) {
+	public Customer createCustomer(@RequestBody Customer customer, HttpServletResponse response) {
+		String username = customer.getUsername();
+		if (repository.findUserByUsername(username) != null) {
+			response.setStatus(HttpServletResponse.SC_CONFLICT);
+			return null;
+		}
 		return repository.save(customer);
 	}
 	
 	@PostMapping("/api/user/Seller")
-	public Seller createSeller(@RequestBody Seller seller) {
+	public Seller createSeller(@RequestBody Seller seller, HttpServletResponse response) {
+		String username = seller.getUsername();
+		if (repository.findUserByUsername(username) != null) {
+			response.setStatus(HttpServletResponse.SC_CONFLICT);
+			return null;
+		}
+		
 		return repository.save(seller);
 	}
 	
 	@PostMapping("/api/user/Delivery")
-	public Delivery createDelivery(@RequestBody Delivery delivery) {
+	public Delivery createDelivery(@RequestBody Delivery delivery, HttpServletResponse response) {
+		String username = delivery.getUsername();
+		if (repository.findUserByUsername(username) != null) {
+			response.setStatus(HttpServletResponse.SC_CONFLICT);
+			return null;
+		}
+		
 		return repository.save(delivery);
 	}
 	
@@ -48,16 +66,28 @@ public class WebUserService {
 		repository.deleteById(id);
 	}
 	
+//	@PostMapping("/api/login")
+//	public WebUser login(@RequestBody WebUser user, HttpServletRequest request, HttpServletResponse response) {
+//		WebUser res = repository.findUserByUsernameAndPassword(user.getUsername(), user.getPassword());
+//		if (res != null) {
+//			request.getServletContext().setAttribute("currentUser", res);
+//			return res;
+//		} 
+//		response.setStatus(HttpServletResponse.SC_CONFLICT);
+//		return null;
+//	}
+//	
 	@PostMapping("/api/login")
-	public WebUser login(@RequestBody WebUser user, HttpServletRequest request, HttpServletResponse response) {
+	public WebUser login(@RequestBody WebUser user, HttpSession session, HttpServletResponse response) {
 		WebUser res = repository.findUserByUsernameAndPassword(user.getUsername(), user.getPassword());
 		if (res != null) {
-			request.getServletContext().setAttribute("currentUser", res);
+			session.setAttribute("currentUser", res);
 			return res;
 		} 
 		response.setStatus(HttpServletResponse.SC_CONFLICT);
 		return null;
 	}
+	
 	
 	@GetMapping("/api/user")
 	public Iterable<WebUser> findAllUsers() {
@@ -92,14 +122,14 @@ public class WebUserService {
 		}
 	}
 	
-	@GetMapping("/api/profile")
-	public WebUser populateProfile(HttpServletRequest request, HttpServletResponse response) {
-		Optional<WebUser> user = repository.findById(1);
-		if (user != null) {
-			WebUser data = user.get();
-			return data;
-		}
-		return null;
+//	@GetMapping("/api/profile}")
+//	public WebUser populateProfile(HttpServletRequest request, HttpServletResponse response) {
+//		Optional<WebUser> user = repository.findById(1);
+//		if (user != null) {
+//			WebUser data = user.get();
+//			return data;
+//		}
+//		return null;
 //		Object cur = request.getServletContext().getAttribute("currentUser");
 //		
 //		if (cur != null) {
@@ -108,6 +138,12 @@ public class WebUserService {
 //		
 //		response.setStatus(HttpServletResponse.SC_CONFLICT);
 //		return null;
+//	}
+	
+	@GetMapping("/api/profile")
+	public WebUser populateProfile(HttpSession session) {
+		WebUser currentUser = (WebUser)session.getAttribute("currentUser");
+		return currentUser;
 	}
 	
 //	@PutMapping("/api/user/{userId}")
@@ -157,8 +193,13 @@ public class WebUserService {
 		return null;
 	}
 		
-	@PostMapping("/api/profile")
-	public void logout(HttpServletRequest request) {
-		request.getServletContext().removeAttribute("currentUser");
+//	@PostMapping("/api/profile")
+//	public void logout(HttpServletRequest request) {
+//		request.getServletContext().removeAttribute("currentUser");
+//	}	
+	
+	@PostMapping("/api/logout")
+	public void logout(HttpSession session) {
+		session.invalidate();
 	}	
 }
