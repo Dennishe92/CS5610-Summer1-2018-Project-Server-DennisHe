@@ -88,7 +88,6 @@ public class WebUserService {
 		return null;
 	}
 	
-	
 	@GetMapping("/api/user")
 	public Iterable<WebUser> findAllUsers() {
 		return repository.findAll();
