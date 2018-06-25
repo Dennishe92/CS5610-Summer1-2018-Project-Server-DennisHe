@@ -15,7 +15,8 @@ public class Product {
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private int id;
 	private String name;
-	private String url;
+	private String sellerName;
+	private int price;
 	
 	@ManyToOne()
 	@JsonIgnore
@@ -55,13 +56,19 @@ public class Product {
 		return this.name;
 	}
 	
-	public void setUrl(String url) {
-		this.url = url;
+	public void setSellerName(String sellerName) {
+		this.sellerName = sellerName;
 	}
 	
-	public String getUrl() {
-		return this.url;
+	public String getSellerName() {
+		return this.sellerName;
 	}
 	
+	public void setPrice(int price) {
+		this.price = price;
+	}
 	
+	public int getPrice() {
+		return this.price;
+	}
 }

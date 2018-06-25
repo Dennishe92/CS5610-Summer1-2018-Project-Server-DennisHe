@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.example.myproject3.model.Product;
 import com.example.myproject3.model.Seller;
 import com.example.myproject3.repositories.ProductRepository;
@@ -48,9 +48,6 @@ public class SellerService {
 	    return seller.getProducts();
 	}
 	
-	@Autowired
-	ProductRepository productRepository;
-	
 //	@PostMapping("/api/seller/{sid}/product/{pid}")
 //	public void addProductBySeller(@PathVariable("sid") int sid, @PathVariable("pid") int pid) {
 //		Optional<WebUser> seller1 = webUserRepository.findById(sid);
@@ -63,19 +60,53 @@ public class SellerService {
 //		}
 //	}
 
-	@PostMapping("/api/seller/product/{pid}")
-	public void addProductBySeller(HttpSession session, @PathVariable("pid") int pid) {
+//	@PostMapping("/api/seller/product/{pid}")
+//	public void addProductBySeller(HttpSession session, @PathVariable("pid") int pid) {
+//		Seller seller = (Seller)session.getAttribute("currentUser");
+//		Optional<Product> product1 = productRepository.findById(pid);
+//		if (product1.isPresent()) {
+//			Product product = (Product)product1.get();
+//			if (seller.getProducts().contains(product)) {
+//				return;
+//			}
+//			seller.addProduct(product);
+//			webUserRepository.save(seller);
+//		}
+//	}
+	
+	@Autowired
+	ProductRepository productRepository;
+	
+	@PostMapping("/api/seller/product")
+	public void addProductBySeller(HttpSession session, @RequestBody Product product) {
 		Seller seller = (Seller)session.getAttribute("currentUser");
-		Optional<Product> product1 = productRepository.findById(pid);
-		if (product1.isPresent()) {
-			Product product = (Product)product1.get();
 			if (seller.getProducts().contains(product)) {
 				return;
 			}
+			product.setSeller(seller);
+			product.setSellerName(seller.getUsername());
+			productRepository.save(product);
 			seller.addProduct(product);
 			webUserRepository.save(seller);
-		}
 	}
+	
+//	// when customer like recipe, save recipe into like list of customer
+//		@PostMapping("/api/customer/like/recipe/{apiId}")
+//		public void likeRecipeByCustomer(@PathVariable("apiId") int apiId, HttpSession session) {
+//			Customer customer = (Customer)session.getAttribute("currentUser");
+//			for(Recipe recipe : customer.getLikedRecipes()) {
+//				if (recipe.getApiId() == apiId) {
+//					return;
+//				}
+//			}
+//			Recipe recipe = new Recipe();
+//			recipe.setApiId(apiId);
+//			recipe.likeCustomer(customer);
+//			customer.likeRecipe(recipe);
+//			webUserRepository.save(customer);
+//			recipeRepository.save(recipe);
+//		}
+		
 	
 //	@DeleteMapping("/api/seller/{sid}/product/{pid}")
 //	public void deleteProductBySeller(@PathVariable("sid") int sid, @PathVariable("pid") int pid) {
