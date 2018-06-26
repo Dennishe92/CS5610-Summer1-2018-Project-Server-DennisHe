@@ -1,6 +1,5 @@
 package com.example.myproject3.service;
 
-import java.util.List;
 import java.util.Optional;
 
 import javax.servlet.http.HttpServletResponse;
@@ -8,7 +7,6 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.catalina.servlet4preview.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.web.servlet.server.Session;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -252,70 +250,90 @@ public class WebUserService {
 		return null;
 	}
 	
-	@PostMapping("/api/customer/order")
-	public void addOrderByCustomer(@RequestBody Order order) {
-		Customer customer = (Customer)session.getAttribute("currentUser");
-		if (customer.getOrders().contains(order)) {
-			return;
-		}
+	@PostMapping("/api/customer/{uid}/order")
+	public void addOrderByCustomer(@PathVariable("uid") int uid, @RequestBody Order order) {
+		Optional<WebUser> data = repository.findById(uid);
+		if (data.isPresent()) {
+			Customer customer = (Customer)(data.get());
+			if (customer.getOrders().contains(order)) {
+				return;
+			}
 			customer.getOrders().add(order);
 			order.setCustomer(customer);
 			order.setCustomerFirstName(customer.getFirstName());
 			order.setCustomerLastName(customer.getLastName());
+		}
 	}
 
-//	@Autowired
-//	OrderRepository orderRepository;
-//	
-//	@DeleteMapping("api/customer/order/{oid}")
-//	public void deleteOrderByCustomer(@PathVariable int oid) {
-//		Customer customer = (Customer)session.getAttribute("currentUser");
-//		Optional<Order> order1 = orderRepository.findById(oid);
-//		if (order1.isPresent()) {
-//			Order order = (Order)order1.get();
-//			customer.removeOrder(order);
-//			orderRepository.deleteById(oid);
-//		}
-//	}
-//	
-//	@GetMapping("/api/delivery/orders")
-//	public Iterable<Order> findOrdersByDelivery() {
-//		Delivery currentUser = (Delivery)session.getAttribute("currentUser");
-//		return currentUser.getOrders();
-//	}
-//	
-//	@GetMapping("/api/seller/product")
-//	public Iterable<Product> findProductsBySeller() {
-//		Seller seller = (Seller)session.getAttribute("currentUser");
-//	    return seller.getProducts();
-//	}
-//	
-//	@Autowired
-//	ProductRepository productRepository;
-//	
-//	@PostMapping("/api/seller/product")
-//	public void addProductBySeller(@RequestBody Product product) {
-//		Seller seller = (Seller)session.getAttribute("currentUser");
-//			if (seller.getProducts().contains(product)) {
-//				return;
-//			}
-//			product.setSeller(seller);
-//			product.setSellerName(seller.getUsername());
-//			productRepository.save(product);
-//			seller.addProduct(product);
-//			repository.save(seller);
-//	}
-//	
-//	@DeleteMapping("/api/seller/product/{pid}")
-//	public void deleteProductBySeller(@PathVariable("pid") int pid) {
-//		Seller seller = (Seller)session.getAttribute("currentUser");
-//		Optional<Product> product1 = productRepository.findById(pid);
-//		if (product1.isPresent()) {
-//			Product product = (Product)product1.get();
-//			seller.deleteProduct(product);
-//			repository.save(seller);
-//		}
-//	}
+	@Autowired
+	OrderRepository orderRepository;
+
+	@DeleteMapping("api/customer/{uid}/order/{oid}")
+	public void deleteOrderByCustomer(@PathVariable int oid, @PathVariable int uid) {
+		Optional<WebUser> data = repository.findById(uid);
+		Optional<Order> order1 = orderRepository.findById(oid);
+		if (data.isPresent() && order1.isPresent()) {
+			Customer customer = (Customer)(data.get());
+			Order order = (Order)(order1.get());
+			customer.removeOrder(order);
+			orderRepository.deleteById(oid);
+		}
+	}
+
+	@GetMapping("/api/delivery/{uid}/orders")
+	public Iterable<Order> findOrdersByDelivery(@PathVariable int uid, HttpServletResponse response) {
+		Optional<WebUser> data = repository.findById(uid);
+		if (data.isPresent()) {
+			Delivery delivery = (Delivery)(data.get());
+			return delivery.getOrders();
+		}
+		
+		response.setStatus(HttpServletResponse.SC_CONFLICT);
+		return null;
+	}
+
+	@GetMapping("/api/seller/{uid}/product")
+	public Iterable<Product> findProductsBySeller(@PathVariable int uid, HttpServletResponse response) {
+		Optional<WebUser> data = repository.findById(uid);
+		if (data.isPresent()) {
+			Seller seller = (Seller)(data.get());
+			return seller.getProducts();
+		}
+		
+		response.setStatus(HttpServletResponse.SC_CONFLICT);
+		return null;
+	}
+	
+	@Autowired
+	ProductRepository productRepository;
+
+	@PostMapping("/api/seller/{uid}/product")
+	public void addProductBySeller(@RequestBody Product product, @PathVariable int uid) {
+		Optional<WebUser> data = repository.findById(uid);
+		if (data.isPresent()) {
+			Seller seller = (Seller)(data.get());
+			if (seller.getProducts().contains(product)) {
+				return;
+			}
+			product.setSeller(seller);
+			product.setSellerName(seller.getUsername());
+			productRepository.save(product);
+			seller.addProduct(product);
+			repository.save(seller);
+		}
+	}
+
+	@DeleteMapping("/api/seller/{uid}/product/{pid}")
+	public void deleteProductBySeller(@PathVariable("pid") int pid, @PathVariable int uid) {
+		Optional<WebUser> data = repository.findById(uid);
+		Optional<Product> product1 = productRepository.findById(pid);
+		if (product1.isPresent() && data.isPresent()) {
+			Product product = (Product)product1.get();
+			Seller seller = (Seller)(data.get());
+			seller.deleteProduct(product);
+			repository.save(seller);
+		}
+	}
 	
 	@GetMapping("/api/checklogin")
 	public void checkLogin(HttpServletResponse response) {
