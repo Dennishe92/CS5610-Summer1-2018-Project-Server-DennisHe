@@ -100,7 +100,7 @@ public class WebUserService {
 		return null;
 	}
 	
-	@GetMapping("/api/user")
+	@GetMapping("/api/users")
 	public Iterable<WebUser> findAllUsers() {
 		return repository.findAll();
 	}
@@ -207,20 +207,21 @@ public class WebUserService {
 		}
 	}
 	
-
-	@DeleteMapping("/api/customer/dislike/recipe/{rid}")
-	public void dislikeRecipeByCustomer(@PathVariable("rid") int rid) {
-		Customer customer = (Customer)session.getAttribute("currentUser");
-		Optional<Recipe> recipe1 = recipeRepository.findById(rid);
-		
-		if (recipe1.isPresent()) {
-			Recipe recipe = (Recipe)recipe1.get();
-			recipe.dislikeCustomer(customer);
-			customer.dislikeRecipe(recipe);
-			repository.save(customer);
-			recipeRepository.save(recipe);
-		}
-	}
+// fixme : use user id or not?
+//	@DeleteMapping("/api/customer/dislike/recipe/{rid}")
+//	public void dislikeRecipeByCustomer(@PathVariable("rid") int rid) {
+//		Customer customer = (Customer)session.getAttribute("currentUser");
+//		Optional<Recipe> recipe1 = recipeRepository.findById(rid);
+//		
+//		if (recipe1.isPresent()) {
+//			Recipe recipe = (Recipe)recipe1.get();
+//			recipe.dislikeCustomer(customer);
+//			customer.dislikeRecipe(recipe);
+//			repository.save(customer);
+//			recipeRepository.save(recipe);
+//		}
+//	}
+	
 	
 //	@GetMapping("/api/customer/recipes")
 //	public Iterable<Recipe> findCustomerLikeRecipes(){
@@ -277,6 +278,21 @@ public class WebUserService {
 			Order order = (Order)(order1.get());
 			customer.removeOrder(order);
 			orderRepository.deleteById(oid);
+		}
+	}
+	
+	@DeleteMapping("/api/customer/{uid}/recipe/{rid}")
+	public void dislikeRecipeByCustomer(@PathVariable("rid") int rid, @PathVariable int uid) {
+		Optional<WebUser> data = repository.findById(uid);
+		Optional<Recipe> recipe1 = recipeRepository.findById(rid);
+		
+		if (recipe1.isPresent() && data.isPresent()) {
+			Customer customer = (Customer)(data.get());
+			Recipe recipe = (Recipe)recipe1.get();
+			recipe.dislikeCustomer(customer);
+			customer.dislikeRecipe(recipe);
+			repository.save(customer);
+			recipeRepository.save(recipe);
 		}
 	}
 

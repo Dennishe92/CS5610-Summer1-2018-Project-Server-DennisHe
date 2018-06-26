@@ -16,22 +16,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 public class Customer extends WebUser{
-//	@OneToMany(mappedBy="owner")
-//	@JsonIgnore
-//	private List<Payment> ownedPayment;
-//	
-//	public void ownedPayment(Payment payment) {
-//		this.ownedPayment.add(payment);
-//		if(payment.getOwner() != this) {
-//			payment.setOwner(this);
-//		}
-//	}
-//	
-//	public List<Payment> getOwnedPayment() {
-//		return ownedPayment;
-//	}
-	
-	
 	private String firstName;
 	private String lastName;
 	

@@ -19,18 +19,11 @@ public class Recipe {
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private int id;
-//	private String name;
-//	private int rating;
-//	private String url;
-	 private String apiId;
+	private String apiId;
 	
 	@ManyToMany(mappedBy="likedRecipes", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	@JsonIgnore
 	private List<Customer> likedCustomers = new ArrayList<>();
-	
-//	@ManyToMany(mappedBy="productRecipes")
-//	@JsonIgnore
-//	private List<Product> recipeProduct;
 	
 	public void likeCustomer(Customer customer) {
 		this.likedCustomers.add(customer);
@@ -50,10 +43,6 @@ public class Recipe {
 		return this.likedCustomers;
 	}
 	
-//	public List<Product> getRecipeProduct() {
-//		return this.recipeProduct;
-//	}
-	
 	public void setId(int id) {
 		this.id = id;
 	}
@@ -69,30 +58,5 @@ public class Recipe {
 	public String getApiId() {
 		return this.apiId;
 	}
-	
-//	
-//	public void setUrl(String url) {
-//		this.url = url;
-//	}
-//
-//	public String getUrl() {
-//		return url;
-//	}
-//	
-//	public void setName(String name) {
-//		this.name = name;
-//	}
-////	
-//	public String getName() {
-//		return this.name;
-//	}
-//
-//	public void setRating(int rating) {
-//		this.rating = rating;
-//	}
-//	
-//	public int getRating() {
-//		return this.rating;
-//	}	
 	
 }
