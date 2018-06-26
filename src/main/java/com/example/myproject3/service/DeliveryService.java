@@ -36,9 +36,9 @@ public class DeliveryService {
 //		return null;
 //	}
 	
-	@GetMapping("/api/delivery/orders")
-	public Iterable<Order> findOrdersByDelivery(HttpSession session) {
-		Delivery currentUser = (Delivery)session.getAttribute("currentUser");
-		return currentUser.getOrders();
-	}
+//	@GetMapping("/api/delivery/orders")
+//	public Iterable<Order> findOrdersByDelivery(HttpSession session) {
+//		Delivery currentUser = (Delivery)session.getAttribute("currentUser");
+//		return currentUser.getOrders();
+//	}
 }

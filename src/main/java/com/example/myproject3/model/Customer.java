@@ -3,9 +3,11 @@ package com.example.myproject3.model;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
-
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.JoinColumn;
@@ -50,9 +52,9 @@ public class Customer extends WebUser{
 	}
 	
 	
-	@OneToMany(mappedBy="customer")
+	@OneToMany(mappedBy="customer", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonIgnore
-	private List<Order> orders;
+	private List<Order> orders = new ArrayList<>();
 	
 	public void addOrder(Order order) {
 		this.orders.add(order);
@@ -71,12 +73,12 @@ public class Customer extends WebUser{
 		return orders;
 	}
 	
-	@ManyToMany
+	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	@JoinTable(name="JOIN_CUSTOMER_RECIPE",
 	joinColumns=@JoinColumn(name="CUSTOMER_ID", referencedColumnName="ID"),
 	inverseJoinColumns=@JoinColumn(name="RECIPE_ID", referencedColumnName="ID"))
 	@JsonIgnore
-	private List<Recipe> likedRecipes;
+	private List<Recipe> likedRecipes = new ArrayList<Recipe>();
 	
 	public List<Recipe> getLikedRecipes() {
 		return this.likedRecipes;
@@ -100,7 +102,7 @@ public class Customer extends WebUser{
 	joinColumns=@JoinColumn(name="CUSTOMER_ID", referencedColumnName="ID"),
 	inverseJoinColumns=@JoinColumn(name="SELLER_ID", referencedColumnName="ID"))
 	@JsonIgnore
-	private List<Seller> followedSellers;
+	private List<Seller> followedSellers = new ArrayList<>();
 	
 	public List<Seller> getFollowedSellers() {
 		return this.followedSellers;

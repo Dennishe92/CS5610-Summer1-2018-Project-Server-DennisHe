@@ -42,11 +42,11 @@ public class SellerService {
 //		return null;
 //	}
 	
-	@GetMapping("/api/seller/product")
-	public Iterable<Product> findProductsBySeller(HttpSession session) {
-		Seller seller = (Seller)session.getAttribute("currentUser");
-	    return seller.getProducts();
-	}
+//	@GetMapping("/api/seller/product")
+//	public Iterable<Product> findProductsBySeller(HttpSession session) {
+//		Seller seller = (Seller)session.getAttribute("currentUser");
+//	    return seller.getProducts();
+//	}
 	
 //	@PostMapping("/api/seller/{sid}/product/{pid}")
 //	public void addProductBySeller(@PathVariable("sid") int sid, @PathVariable("pid") int pid) {
@@ -77,18 +77,18 @@ public class SellerService {
 	@Autowired
 	ProductRepository productRepository;
 	
-	@PostMapping("/api/seller/product")
-	public void addProductBySeller(HttpSession session, @RequestBody Product product) {
-		Seller seller = (Seller)session.getAttribute("currentUser");
-			if (seller.getProducts().contains(product)) {
-				return;
-			}
-			product.setSeller(seller);
-			product.setSellerName(seller.getUsername());
-			productRepository.save(product);
-			seller.addProduct(product);
-			webUserRepository.save(seller);
-	}
+//	@PostMapping("/api/seller/product")
+//	public void addProductBySeller(HttpSession session, @RequestBody Product product) {
+//		Seller seller = (Seller)session.getAttribute("currentUser");
+//			if (seller.getProducts().contains(product)) {
+//				return;
+//			}
+//			product.setSeller(seller);
+//			product.setSellerName(seller.getUsername());
+//			productRepository.save(product);
+//			seller.addProduct(product);
+//			webUserRepository.save(seller);
+//	}
 	
 //	// when customer like recipe, save recipe into like list of customer
 //		@PostMapping("/api/customer/like/recipe/{apiId}")
@@ -120,14 +120,14 @@ public class SellerService {
 //		}
 //	}
 	
-	@DeleteMapping("/api/seller/product/{pid}")
-	public void deleteProductBySeller(HttpSession session, @PathVariable("pid") int pid) {
-		Seller seller = (Seller)session.getAttribute("currentUser");
-		Optional<Product> product1 = productRepository.findById(pid);
-		if (product1.isPresent()) {
-			Product product = (Product)product1.get();
-			seller.deleteProduct(product);
-			webUserRepository.save(seller);
-		}
-	}
+//	@DeleteMapping("/api/seller/product/{pid}")
+//	public void deleteProductBySeller(HttpSession session, @PathVariable("pid") int pid) {
+//		Seller seller = (Seller)session.getAttribute("currentUser");
+//		Optional<Product> product1 = productRepository.findById(pid);
+//		if (product1.isPresent()) {
+//			Product product = (Product)product1.get();
+//			seller.deleteProduct(product);
+//			webUserRepository.save(seller);
+//		}
+//	}
 }

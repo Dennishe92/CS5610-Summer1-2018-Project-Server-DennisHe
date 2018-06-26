@@ -1,8 +1,11 @@
 package com.example.myproject3.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -19,11 +22,11 @@ public class Recipe {
 //	private String name;
 //	private int rating;
 //	private String url;
-	 private int apiId;
+	 private String apiId;
 	
-	@ManyToMany(mappedBy="likedRecipes")
+	@ManyToMany(mappedBy="likedRecipes", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	@JsonIgnore
-	private List<Customer> likedCustomers;
+	private List<Customer> likedCustomers = new ArrayList<>();
 	
 //	@ManyToMany(mappedBy="productRecipes")
 //	@JsonIgnore
@@ -31,6 +34,7 @@ public class Recipe {
 	
 	public void likeCustomer(Customer customer) {
 		this.likedCustomers.add(customer);
+		System.out.println(customer);
 		if(!customer.getLikedRecipes().contains(this)) {
 			customer.getLikedRecipes().add(this);
 		}
@@ -58,11 +62,11 @@ public class Recipe {
 		return id;
 	}
 	
-	public void setApiId(int apiId) {
+	public void setApiId(String apiId) {
 		this.apiId = apiId;
 	}
 	
-	public int getApiId() {
+	public String getApiId() {
 		return this.apiId;
 	}
 	

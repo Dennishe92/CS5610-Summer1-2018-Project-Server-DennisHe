@@ -1,5 +1,6 @@
 package com.example.myproject3.service;
 
+import java.util.List;
 import java.util.Optional;
 
 import javax.servlet.http.HttpServletResponse;
@@ -7,6 +8,7 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.catalina.servlet4preview.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.servlet.server.Session;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,13 +20,20 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.myproject3.model.Customer;
 import com.example.myproject3.model.Delivery;
+import com.example.myproject3.model.Order;
+import com.example.myproject3.model.Product;
+import com.example.myproject3.model.Recipe;
 import com.example.myproject3.model.Seller;
 import com.example.myproject3.model.WebUser;
+import com.example.myproject3.repositories.OrderRepository;
+import com.example.myproject3.repositories.ProductRepository;
+import com.example.myproject3.repositories.RecipeRepository;
 import com.example.myproject3.repositories.WebUserRepository;
 
 @RestController
 @CrossOrigin(origins = "*", maxAge = 3600)
 public class WebUserService {
+	private HttpSession session;
 
 	@Autowired
 	WebUserRepository repository;
@@ -32,6 +41,7 @@ public class WebUserService {
 	@PostMapping("/api/user/Customer")
 	public Customer createCustomer(@RequestBody Customer customer, HttpServletResponse response) {
 		String username = customer.getUsername();
+		customer.setRole("Customer");
 		if (repository.findUserByUsername(username) != null) {
 			response.setStatus(HttpServletResponse.SC_CONFLICT);
 			return null;
@@ -42,6 +52,7 @@ public class WebUserService {
 	@PostMapping("/api/user/Seller")
 	public Seller createSeller(@RequestBody Seller seller, HttpServletResponse response) {
 		String username = seller.getUsername();
+		seller.setRole("Seller");
 		if (repository.findUserByUsername(username) != null) {
 			response.setStatus(HttpServletResponse.SC_CONFLICT);
 			return null;
@@ -53,6 +64,7 @@ public class WebUserService {
 	@PostMapping("/api/user/Delivery")
 	public Delivery createDelivery(@RequestBody Delivery delivery, HttpServletResponse response) {
 		String username = delivery.getUsername();
+		delivery.setRole("Delivery");
 		if (repository.findUserByUsername(username) != null) {
 			response.setStatus(HttpServletResponse.SC_CONFLICT);
 			return null;
@@ -76,12 +88,14 @@ public class WebUserService {
 //		response.setStatus(HttpServletResponse.SC_CONFLICT);
 //		return null;
 //	}
-//	
+	
 	@PostMapping("/api/login")
-	public WebUser login(@RequestBody WebUser user, HttpSession session, HttpServletResponse response) {
+	public WebUser login(@RequestBody WebUser user, HttpServletResponse response, HttpServletRequest request) {
 		WebUser res = repository.findUserByUsernameAndPassword(user.getUsername(), user.getPassword());
+		session = request.getSession();
 		if (res != null) {
 			session.setAttribute("currentUser", res);
+			System.out.println("login success!" + session.getAttribute("currentUser"));
 			return res;
 		} 
 		response.setStatus(HttpServletResponse.SC_CONFLICT);
@@ -92,22 +106,6 @@ public class WebUserService {
 	public Iterable<WebUser> findAllUsers() {
 		return repository.findAll();
 	}
-	
-//	@GetMapping("/api/user/{userId}")
-//	public WebUser findUserById(@PathVariable("userId") int userId) {
-//		Optional<WebUser> data = repository.findById(userId);
-//		if (data.isPresent()) {
-//			return data.get();
-//		}
-//		return null;
-//	}
-	
-	@GetMapping("/api/user/{username}")
-	public WebUser findUserByUsername(@PathVariable("username") String username) {
-		WebUser data = repository.findUserByUsername(username);
-		return data;
-	}
-	
 	
 	@PostMapping("/api/register")
 	public WebUser register(@RequestBody WebUser user, HttpServletResponse response) {
@@ -121,70 +119,26 @@ public class WebUserService {
 		}
 	}
 	
-//	@GetMapping("/api/profile}")
-//	public WebUser populateProfile(HttpServletRequest request, HttpServletResponse response) {
-//		Optional<WebUser> user = repository.findById(1);
-//		if (user != null) {
-//			WebUser data = user.get();
-//			return data;
-//		}
-//		return null;
-//		Object cur = request.getServletContext().getAttribute("currentUser");
-//		
-//		if (cur != null) {
-//			return (WebUser)cur;
-//		}
-//		
-//		response.setStatus(HttpServletResponse.SC_CONFLICT);
-//		return null;
-//	}
-	
 	@GetMapping("/api/profile")
-	public WebUser populateProfile(HttpSession session) {
+	public WebUser populateProfile(HttpServletResponse response, HttpServletRequest request) {
 		WebUser currentUser = (WebUser)session.getAttribute("currentUser");
+		
+		if (currentUser == null) {
+			response.setStatus(HttpServletResponse.SC_CONFLICT);
+			return null;
+		}
 		return currentUser;
 	}
 	
-//	@PutMapping("/api/user/{userId}")
-//	public WebUser updateUser(@PathVariable("userId") int userId, @RequestBody WebUser newUser, HttpServletResponse response) {
-//		Optional<WebUser> data = repository.findById(userId);
-//		if (data.isPresent()) {
-//			WebUser user =  data.get();
-//			user.setUsername(newUser.getUsername());//fixme
-//			user.setPassword(newUser.getPassword());
-//			repository.save(user);
-//			return user;
-//		}
-//		
-//		response.setStatus(HttpServletResponse.SC_CONFLICT);
-//		return null;
-//	}
-	
-	@PutMapping("/api/user/{userId}")
-	public WebUser updateUser(@PathVariable("userId") int userId, @RequestBody WebUser newUser, HttpServletResponse response) {
-		Optional<WebUser> user = repository.findById(userId);
+	@PutMapping("/api/profile/{uid}")
+	public WebUser updateProfile(@RequestBody WebUser user, @PathVariable("uid") int uid, HttpServletResponse response) {
+		Optional<WebUser> current = repository.findById(uid);
 		
-		if (user != null) {
-			WebUser data = user.get();
-			data.setUsername(newUser.getUsername());
-			data.setPassword(newUser.getPassword());
-			repository.save(data);
-			return data;
-		}
-		
-		response.setStatus(HttpServletResponse.SC_CONFLICT);
-		return null;
-	}
-	
-
-	@PutMapping("/api/profile")
-	public WebUser updateProfile(@RequestBody WebUser user, HttpServletRequest request, HttpServletResponse response) {
-		WebUser cur = (WebUser) request.getServletContext().getAttribute("currentUser");
-		
-		if (cur != null) {
+		if (current.isPresent()) {
+			Customer cur = (Customer)(current.get());
 			cur.setUsername(user.getUsername());
 			cur.setPhone(user.getPhone());
-			cur.setEmail(user.getEmail());//fixme
+			cur.setEmail(user.getEmail());
 			repository.save(cur);
 			return cur; 
 		}
@@ -198,7 +152,175 @@ public class WebUserService {
 //	}	
 	
 	@PostMapping("/api/logout")
-	public void logout(HttpSession session) {
-		session.invalidate();
+	public void logout() {
+		this.session.invalidate();
 	}	
+	
+	@Autowired
+	RecipeRepository recipeRepository;
+	
+	@PostMapping("/api/customer/like/recipe/{apiId}")
+	public void likeRecipeByCustomer(@PathVariable("apiId") String apiId, HttpServletRequest request) {
+		Customer customer = (Customer)session.getAttribute("currentUser");
+		System.out.println(customer);
+		if (customer.getLikedRecipes().size() != 0) {
+		for(Recipe recipe : customer.getLikedRecipes()) {
+			if (recipe.getApiId().equals(apiId)) {
+				return;
+			}
+		}
+		}
+		Recipe recipe = new Recipe();
+		recipe.setApiId(apiId);
+		recipeRepository.save(recipe);
+		recipe.likeCustomer(customer);
+		customer.likeRecipe(recipe);
+		repository.save(customer);	
+	}
+
+	@PostMapping("/api/customer/follow/seller/{sid}")
+	public void followSellerByCustomer(@PathVariable("sid") int sid) {
+		Customer customer = (Customer)session.getAttribute("currentUser");
+		Optional<WebUser> seller1 = repository.findById(sid);
+	
+		if (seller1.isPresent()) {
+			Seller seller = (Seller)seller1.get();
+			if (customer.getFollowedSellers().contains(seller)) {
+				return;
+			}
+			customer.followSeller(seller);
+			seller.followCustomer(customer);
+			repository.save(seller);
+			repository.save(customer);
+		}
+	}
+	
+	
+	@DeleteMapping("/api/customer/unfollow/seller/{sid}")
+	public void unfollowSellerByCustomer(@PathVariable("sid") int sid) {
+		Customer customer = (Customer)session.getAttribute("currentUser");
+		Optional<WebUser> seller1 = repository.findById(sid);
+		if (seller1.isPresent()) {
+			Seller seller = (Seller)seller1.get();
+			customer.disfollowSeller(seller);
+			seller.disfollowCustomer(customer);
+			repository.save(seller);
+			repository.save(customer);
+		}
+	}
+	
+
+	@DeleteMapping("/api/customer/dislike/recipe/{rid}")
+	public void dislikeRecipeByCustomer(@PathVariable("rid") int rid) {
+		Customer customer = (Customer)session.getAttribute("currentUser");
+		Optional<Recipe> recipe1 = recipeRepository.findById(rid);
+		
+		if (recipe1.isPresent()) {
+			Recipe recipe = (Recipe)recipe1.get();
+			recipe.dislikeCustomer(customer);
+			customer.dislikeRecipe(recipe);
+			repository.save(customer);
+			recipeRepository.save(recipe);
+		}
+	}
+	
+//	@GetMapping("/api/customer/recipes")
+//	public Iterable<Recipe> findCustomerLikeRecipes(){
+//		Customer customer = (Customer)session.getAttribute("currentUser");
+//			return customer.getLikedRecipes();
+//	}
+	
+	@GetMapping("/api/customer/{uid}/recipes")
+	public Iterable<Recipe> findCustomerLikeRecipes(@PathVariable("uid") int uid){
+		Optional<WebUser> data = repository.findById(uid);
+		if (data.isPresent()) {
+			System.out.println(data);
+		Customer customer = (Customer)(data.get());
+		return customer.getLikedRecipes();
+		}
+		return null;
+	}
+	
+	@GetMapping("/api/customer/{uid}/orders")
+	public Iterable<Order> findOrdersByCustomer(@PathVariable("uid") int uid) {
+		Optional<WebUser> data = repository.findById(uid);
+		if (data.isPresent()) {
+			Customer customer = (Customer)(data.get());
+			return customer.getOrders();
+		}
+		
+		return null;
+	}
+	
+	@PostMapping("/api/customer/order")
+	public void addOrderByCustomer(@RequestBody Order order) {
+		Customer customer = (Customer)session.getAttribute("currentUser");
+		if (customer.getOrders().contains(order)) {
+			return;
+		}
+			customer.getOrders().add(order);
+			order.setCustomer(customer);
+			order.setCustomerFirstName(customer.getFirstName());
+			order.setCustomerLastName(customer.getLastName());
+	}
+
+//	@Autowired
+//	OrderRepository orderRepository;
+//	
+//	@DeleteMapping("api/customer/order/{oid}")
+//	public void deleteOrderByCustomer(@PathVariable int oid) {
+//		Customer customer = (Customer)session.getAttribute("currentUser");
+//		Optional<Order> order1 = orderRepository.findById(oid);
+//		if (order1.isPresent()) {
+//			Order order = (Order)order1.get();
+//			customer.removeOrder(order);
+//			orderRepository.deleteById(oid);
+//		}
+//	}
+//	
+//	@GetMapping("/api/delivery/orders")
+//	public Iterable<Order> findOrdersByDelivery() {
+//		Delivery currentUser = (Delivery)session.getAttribute("currentUser");
+//		return currentUser.getOrders();
+//	}
+//	
+//	@GetMapping("/api/seller/product")
+//	public Iterable<Product> findProductsBySeller() {
+//		Seller seller = (Seller)session.getAttribute("currentUser");
+//	    return seller.getProducts();
+//	}
+//	
+//	@Autowired
+//	ProductRepository productRepository;
+//	
+//	@PostMapping("/api/seller/product")
+//	public void addProductBySeller(@RequestBody Product product) {
+//		Seller seller = (Seller)session.getAttribute("currentUser");
+//			if (seller.getProducts().contains(product)) {
+//				return;
+//			}
+//			product.setSeller(seller);
+//			product.setSellerName(seller.getUsername());
+//			productRepository.save(product);
+//			seller.addProduct(product);
+//			repository.save(seller);
+//	}
+//	
+//	@DeleteMapping("/api/seller/product/{pid}")
+//	public void deleteProductBySeller(@PathVariable("pid") int pid) {
+//		Seller seller = (Seller)session.getAttribute("currentUser");
+//		Optional<Product> product1 = productRepository.findById(pid);
+//		if (product1.isPresent()) {
+//			Product product = (Product)product1.get();
+//			seller.deleteProduct(product);
+//			repository.save(seller);
+//		}
+//	}
+	
+	@GetMapping("/api/checklogin")
+	public void checkLogin(HttpServletResponse response) {
+		if (this.session == null) {
+			response.setStatus(HttpServletResponse.SC_CONFLICT);
+		}
+	}
 }

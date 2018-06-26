@@ -15,6 +15,15 @@ public class WebUser {
 	private String password;
 	private String phone;
 	private String email;
+	private String role;
+	
+	public void setRole(String role) {
+		this.role = role;
+	}
+	
+	public String getRole() {
+		return this.role;
+	}
 	
 	public String getPhone() {
 		return phone;

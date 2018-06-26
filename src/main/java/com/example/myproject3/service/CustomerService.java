@@ -50,21 +50,25 @@ public class CustomerService {
 //	}
 	
 	// when customer like recipe, save recipe into like list of customer
-	@PostMapping("/api/customer/like/recipe/{apiId}")
-	public void likeRecipeByCustomer(@PathVariable("apiId") int apiId, HttpSession session) {
-		Customer customer = (Customer)session.getAttribute("currentUser");
-		for(Recipe recipe : customer.getLikedRecipes()) {
-			if (recipe.getApiId() == apiId) {
-				return;
-			}
-		}
-		Recipe recipe = new Recipe();
-		recipe.setApiId(apiId);
-		recipe.likeCustomer(customer);
-		customer.likeRecipe(recipe);
-		webUserRepository.save(customer);
-		recipeRepository.save(recipe);
-	}
+//	@PostMapping("/api/customer/like/recipe/{apiId}")
+//	public void likeRecipeByCustomer(@PathVariable("apiId") String apiId, HttpSession session) {
+//		System.out.println("session is " + session.getAttribute("currentUser"));
+//		Customer customer = (Customer)session.getAttribute("currentUser");
+//		System.out.println(customer);
+////		if (customer.getLikedRecipes().size() != 0) {
+////		for(Recipe recipe : customer.getLikedRecipes()) {
+////			if (recipe.getApiId() == apiId) {
+////				return;
+////			}
+////		}
+////		}
+//		Recipe recipe = new Recipe();
+//		recipe.setApiId(apiId);
+//		recipe.likeCustomer(customer);
+//		customer.likeRecipe(recipe);
+//		webUserRepository.save(customer);
+//		recipeRepository.save(recipe);
+//	}
 	
 	// customer like seller
 //	@PostMapping("/api/customer/{cid}/seller/{sid}")
@@ -82,22 +86,22 @@ public class CustomerService {
 //		}
 //	}
 	
-	@PostMapping("/api/customer/follow/seller/{sid}")
-	public void followSellerByCustomer(@PathVariable("sid") int sid, HttpSession session) {
-		Customer customer = (Customer)session.getAttribute("currentUser");
-		Optional<WebUser> seller1 = webUserRepository.findById(sid);
-		
-		if (seller1.isPresent()) {
-			Seller seller = (Seller)seller1.get();
-			if (customer.getFollowedSellers().contains(seller)) {
-				return;
-			}
-			customer.followSeller(seller);
-			seller.followCustomer(customer);
-			webUserRepository.save(seller);
-			webUserRepository.save(customer);
-		}
-	}
+//	@PostMapping("/api/customer/follow/seller/{sid}")
+//	public void followSellerByCustomer(@PathVariable("sid") int sid, HttpSession session) {
+//		Customer customer = (Customer)session.getAttribute("currentUser");
+//		Optional<WebUser> seller1 = webUserRepository.findById(sid);
+//		
+//		if (seller1.isPresent()) {
+//			Seller seller = (Seller)seller1.get();
+//			if (customer.getFollowedSellers().contains(seller)) {
+//				return;
+//			}
+//			customer.followSeller(seller);
+//			seller.followCustomer(customer);
+//			webUserRepository.save(seller);
+//			webUserRepository.save(customer);
+//		}
+//	}
 	
 	// customer dislike seller
 //	@DeleteMapping("/api/customer/{cid}/seller/{sid}")
@@ -114,19 +118,19 @@ public class CustomerService {
 //			webUserRepository.save(customer);
 //		}
 //	}
-	
-	@DeleteMapping("/api/customer/unfollow/seller/{sid}")
-	public void unfollowSellerByCustomer(@PathVariable("sid") int sid, HttpSession session) {
-		Customer customer = (Customer)session.getAttribute("currentUser");
-		Optional<WebUser> seller1 = webUserRepository.findById(sid);
-		if (seller1.isPresent()) {
-			Seller seller = (Seller)seller1.get();
-			customer.disfollowSeller(seller);
-			seller.disfollowCustomer(customer);
-			webUserRepository.save(seller);
-			webUserRepository.save(customer);
-		}
-	}
+//	
+//	@DeleteMapping("/api/customer/unfollow/seller/{sid}")
+//	public void unfollowSellerByCustomer(@PathVariable("sid") int sid, HttpSession session) {
+//		Customer customer = (Customer)session.getAttribute("currentUser");
+//		Optional<WebUser> seller1 = webUserRepository.findById(sid);
+//		if (seller1.isPresent()) {
+//			Seller seller = (Seller)seller1.get();
+//			customer.disfollowSeller(seller);
+//			seller.disfollowCustomer(customer);
+//			webUserRepository.save(seller);
+//			webUserRepository.save(customer);
+//		}
+//	}
 	
 //	@DeleteMapping("/api/customer/{cid}/recipe/{rid}")
 //	public void dislikeRecipeByCustomer(@PathVariable("rid") int rid, @PathVariable("cid") int cid) {
@@ -142,20 +146,20 @@ public class CustomerService {
 //			recipeRepository.save(recipe);
 //		}
 //	}
-	
-	@DeleteMapping("/api/customer/dislike/recipe/{rid}")
-	public void dislikeRecipeByCustomer(@PathVariable("rid") int rid, HttpSession session) {
-		Customer customer = (Customer)session.getAttribute("currentUser");
-		Optional<Recipe> recipe1 = recipeRepository.findById(rid);
-		
-		if (recipe1.isPresent()) {
-			Recipe recipe = (Recipe)recipe1.get();
-			recipe.dislikeCustomer(customer);
-			customer.dislikeRecipe(recipe);
-			webUserRepository.save(customer);
-			recipeRepository.save(recipe);
-		}
-	}
+//	
+//	@DeleteMapping("/api/customer/dislike/recipe/{rid}")
+//	public void dislikeRecipeByCustomer(@PathVariable("rid") int rid, HttpSession session) {
+//		Customer customer = (Customer)session.getAttribute("currentUser");
+//		Optional<Recipe> recipe1 = recipeRepository.findById(rid);
+//		
+//		if (recipe1.isPresent()) {
+//			Recipe recipe = (Recipe)recipe1.get();
+//			recipe.dislikeCustomer(customer);
+//			customer.dislikeRecipe(recipe);
+//			webUserRepository.save(customer);
+//			recipeRepository.save(recipe);
+//		}
+//	}
 
 	// Return all recipes the customer like
 //	@GetMapping("/api/customer/{cid}/recipe")
@@ -170,11 +174,11 @@ public class CustomerService {
 //	}
 	
 	
-	@GetMapping("/api/customer/recipes")
-	public Iterable<Recipe> findCustomerLikeRecipes(HttpSession session){
-		Customer customer = (Customer)session.getAttribute("currentUser");
-			return customer.getLikedRecipes();
-	}
+//	@GetMapping("/api/customer/recipes")
+//	public Iterable<Recipe> findCustomerLikeRecipes(HttpSession session){
+//		Customer customer = (Customer)session.getAttribute("currentUser");
+//			return customer.getLikedRecipes();
+//	}
 	
 //	@GetMapping("/api/customer/{cid}/order")
 //	public Iterable<Order> findOrdersByCustomer(@PathVariable("cid") int cid) {
@@ -187,11 +191,11 @@ public class CustomerService {
 //		return null;
 //	}
 	
-	@GetMapping("/api/customer/orders")
-	public Iterable<Order> findOrdersByCustomer(HttpSession session) {
-		Customer customer = (Customer)session.getAttribute("currentUser");
-			return customer.getOrders();
-	}
+//	@GetMapping("/api/customer/orders")
+//	public Iterable<Order> findOrdersByCustomer(HttpSession session) {
+//		Customer customer = (Customer)session.getAttribute("currentUser");
+//			return customer.getOrders();
+//	}
 	
 //	@PostMapping("/api/customer/{cid}/order")
 //	public void addOrderByCustomer(@PathVariable("cid") int cid, @RequestBody Order order) {
@@ -205,17 +209,17 @@ public class CustomerService {
 //		}
 //	}
 	
-	@PostMapping("/api/customer/order")
-	public void addOrderByCustomer(HttpSession session, @RequestBody Order order) {
-		Customer customer = (Customer)session.getAttribute("currentUser");
-		if (customer.getOrders().contains(order)) {
-			return;
-		}
-			customer.getOrders().add(order);
-			order.setCustomer(customer);
-			order.setCustomerFirstName(customer.getFirstName());
-			order.setCustomerLastName(customer.getLastName());
-	}
+//	@PostMapping("/api/customer/order")
+//	public void addOrderByCustomer(HttpSession session, @RequestBody Order order) {
+//		Customer customer = (Customer)session.getAttribute("currentUser");
+//		if (customer.getOrders().contains(order)) {
+//			return;
+//		}
+//			customer.getOrders().add(order);
+//			order.setCustomer(customer);
+//			order.setCustomerFirstName(customer.getFirstName());
+//			order.setCustomerLastName(customer.getLastName());
+//	}
 	
 	@Autowired
 	OrderRepository orderRepository;
@@ -232,15 +236,15 @@ public class CustomerService {
 //		}
 //	}
 //	
-	@DeleteMapping("api/customer/order/{oid}")
-	public void deleteOrderByCustomer(HttpSession session, @PathVariable int oid) {
-		Customer customer = (Customer)session.getAttribute("currentUser");
-		Optional<Order> order1 = orderRepository.findById(oid);
-		if (order1.isPresent()) {
-			Order order = (Order)order1.get();
-			customer.removeOrder(order);
-			orderRepository.deleteById(oid);
-		}
-	}
+//	@DeleteMapping("api/customer/order/{oid}")
+//	public void deleteOrderByCustomer(HttpSession session, @PathVariable int oid) {
+//		Customer customer = (Customer)session.getAttribute("currentUser");
+//		Optional<Order> order1 = orderRepository.findById(oid);
+//		if (order1.isPresent()) {
+//			Order order = (Order)order1.get();
+//			customer.removeOrder(order);
+//			orderRepository.deleteById(oid);
+//		}
+//	}
 	
 }
