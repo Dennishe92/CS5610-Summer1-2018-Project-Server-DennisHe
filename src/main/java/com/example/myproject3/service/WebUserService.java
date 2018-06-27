@@ -389,4 +389,9 @@ public class WebUserService {
 		return sellers;
 	}
 	
+	@GetMapping("/api/user/current")
+	public WebUser findCurrentUser() {
+		WebUser user = (WebUser)session.getAttribute("currentUser");
+		return user;
+	}
 }
