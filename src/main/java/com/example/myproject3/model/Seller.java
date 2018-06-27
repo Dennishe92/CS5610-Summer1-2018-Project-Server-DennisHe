@@ -1,8 +1,11 @@
 package com.example.myproject3.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 
@@ -33,7 +36,7 @@ public class Seller extends WebUser {
 	
 	@ManyToMany(mappedBy="followedSellers")
 	@JsonIgnore
-	private List<Customer> followedCustomers;
+	private List<Customer> followedCustomers = new ArrayList<>();
 	
 	public void followCustomer(Customer customer) {
 		this.followedCustomers.add(customer);

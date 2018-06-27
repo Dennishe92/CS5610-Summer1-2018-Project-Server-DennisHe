@@ -29,7 +29,7 @@ public class ProductService {
 //		productRepository.deleteById(pid);
 //	}
 	
-	@GetMapping("/api/products")
+	@GetMapping("/api/product")
 	public Iterable<Product> findAllProducts() {
 		return productRepository.findAll();
 	}

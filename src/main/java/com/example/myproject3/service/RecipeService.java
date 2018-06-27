@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.myproject3.model.Customer;
+import com.example.myproject3.model.Order;
 import com.example.myproject3.model.Recipe;
 import com.example.myproject3.model.WebUser;
 import com.example.myproject3.repositories.CustomerRepository;
@@ -71,6 +72,12 @@ public class RecipeService {
 	@DeleteMapping("/api/recipe/{recipeId}")
 	public void deleteRecipe(@PathVariable("recipeId") int id) {
 		recipeRepository.deleteById(id);
+	}
+	
+	
+	@GetMapping("/api/recipe")
+	public Iterable<Recipe> findAllRecipes() {
+		return recipeRepository.findAll();
 	}
 	
 	// Return all customers who like this recipe

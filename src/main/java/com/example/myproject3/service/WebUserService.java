@@ -1,5 +1,7 @@
 package com.example.myproject3.service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import javax.servlet.http.HttpServletResponse;
@@ -160,6 +162,7 @@ public class WebUserService {
 	@PostMapping("/api/customer/like/recipe/{apiId}")
 	public void likeRecipeByCustomer(@PathVariable("apiId") String apiId, HttpServletRequest request) {
 		Customer customer = (Customer)session.getAttribute("currentUser");
+		System.out.println("hello");
 		System.out.println(customer);
 		if (customer.getLikedRecipes().size() != 0) {
 		for(Recipe recipe : customer.getLikedRecipes()) {
@@ -172,7 +175,7 @@ public class WebUserService {
 		recipe.setApiId(apiId);
 		recipeRepository.save(recipe);
 		recipe.likeCustomer(customer);
-		customer.likeRecipe(recipe);
+//		customer.likeRecipe(recipe);
 		repository.save(customer);	
 	}
 
@@ -180,7 +183,7 @@ public class WebUserService {
 	public void followSellerByCustomer(@PathVariable("sid") int sid) {
 		Customer customer = (Customer)session.getAttribute("currentUser");
 		Optional<WebUser> seller1 = repository.findById(sid);
-	
+		System.out.println(customer);
 		if (seller1.isPresent()) {
 			Seller seller = (Seller)seller1.get();
 			if (customer.getFollowedSellers().contains(seller)) {
@@ -194,25 +197,41 @@ public class WebUserService {
 	}
 	
 	
-	@DeleteMapping("/api/customer/unfollow/seller/{sid}")
-	public void unfollowSellerByCustomer(@PathVariable("sid") int sid) {
-		Customer customer = (Customer)session.getAttribute("currentUser");
-		Optional<WebUser> seller1 = repository.findById(sid);
-		if (seller1.isPresent()) {
-			Seller seller = (Seller)seller1.get();
+//	@DeleteMapping("/api/customer/unfollow/seller/{sid}")
+//	public void unfollowSellerByCustomer(@PathVariable("sid") int sid) {
+//		Customer customer = (Customer)session.getAttribute("currentUser");
+//		Optional<WebUser> seller1 = repository.findById(sid);
+//		System.out.println(customer);
+//		if (seller1.isPresent()) {
+//			Seller seller = (Seller)seller1.get();
+//			customer.disfollowSeller(seller);
+//			seller.disfollowCustomer(customer);
+//			repository.save(seller);
+//			repository.save(customer);
+//		}
+//	}
+//	
+	
+	@DeleteMapping("/api/customer/{cid}/seller/{sid}")
+	public void unfollowSellerByCustomer(@PathVariable("sid") int sid, @PathVariable("cid") int cid) {
+		Optional<WebUser> cus1 = repository.findById(cid);
+		Optional<WebUser> sel1 = repository.findById(sid);
+		
+		if (cus1.isPresent() && sel1.isPresent()) {
+			Customer customer = (Customer)(cus1.get());
+			Seller seller = (Seller)(sel1.get());
 			customer.disfollowSeller(seller);
 			seller.disfollowCustomer(customer);
-			repository.save(seller);
 			repository.save(customer);
+			repository.save(seller);
 		}
 	}
-	
 // fixme : use user id or not?
 //	@DeleteMapping("/api/customer/dislike/recipe/{rid}")
 //	public void dislikeRecipeByCustomer(@PathVariable("rid") int rid) {
 //		Customer customer = (Customer)session.getAttribute("currentUser");
 //		Optional<Recipe> recipe1 = recipeRepository.findById(rid);
-//		
+	
 //		if (recipe1.isPresent()) {
 //			Recipe recipe = (Recipe)recipe1.get();
 //			recipe.dislikeCustomer(customer);
@@ -220,8 +239,7 @@ public class WebUserService {
 //			repository.save(customer);
 //			recipeRepository.save(recipe);
 //		}
-//	}
-	
+//	}	
 	
 //	@GetMapping("/api/customer/recipes")
 //	public Iterable<Recipe> findCustomerLikeRecipes(){
@@ -229,7 +247,7 @@ public class WebUserService {
 //			return customer.getLikedRecipes();
 //	}
 	
-	@GetMapping("/api/customer/{uid}/recipes")
+	@GetMapping("/api/customer/{uid}/recipe")
 	public Iterable<Recipe> findCustomerLikeRecipes(@PathVariable("uid") int uid){
 		Optional<WebUser> data = repository.findById(uid);
 		if (data.isPresent()) {
@@ -240,7 +258,7 @@ public class WebUserService {
 		return null;
 	}
 	
-	@GetMapping("/api/customer/{uid}/orders")
+	@GetMapping("/api/customer/{uid}/order")
 	public Iterable<Order> findOrdersByCustomer(@PathVariable("uid") int uid) {
 		Optional<WebUser> data = repository.findById(uid);
 		if (data.isPresent()) {
@@ -282,7 +300,7 @@ public class WebUserService {
 	}
 	
 	@DeleteMapping("/api/customer/{uid}/recipe/{rid}")
-	public void dislikeRecipeByCustomer(@PathVariable("rid") int rid, @PathVariable int uid) {
+	public void dislikeRecipeByCustomer(@PathVariable("rid") int rid, @PathVariable("uid") int uid) {
 		Optional<WebUser> data = repository.findById(uid);
 		Optional<Recipe> recipe1 = recipeRepository.findById(rid);
 		
@@ -296,7 +314,7 @@ public class WebUserService {
 		}
 	}
 
-	@GetMapping("/api/delivery/{uid}/orders")
+	@GetMapping("/api/delivery/{uid}/order")
 	public Iterable<Order> findOrdersByDelivery(@PathVariable int uid, HttpServletResponse response) {
 		Optional<WebUser> data = repository.findById(uid);
 		if (data.isPresent()) {
@@ -357,4 +375,18 @@ public class WebUserService {
 			response.setStatus(HttpServletResponse.SC_CONFLICT);
 		}
 	}
+	
+	@GetMapping("/api/seller")
+	public Iterable<Seller> findAllSeller() {
+		List<WebUser> users = (List<WebUser>)repository.findAll();
+		List<Seller> sellers = new ArrayList<>();
+		for (WebUser user : users) {
+			if (user.getRole() == "Seller") {
+				Seller  seller = (Seller)user;
+				sellers.add(seller);
+			}
+		}
+		return sellers;
+	}
+	
 }
