@@ -158,9 +158,10 @@ public class WebUserService {
 	
 	@PostMapping("/api/customer/like/recipe/{apiId}")
 	public void likeRecipeByCustomer(@PathVariable("apiId") String apiId, HttpServletRequest request) {
-		Customer customer = (Customer)session.getAttribute("currentUser");
-		System.out.println("hello");
-		System.out.println(customer);
+		Customer cus = (Customer)session.getAttribute("currentUser");
+//		System.out.println("hello");
+//		System.out.println(customer);
+		Customer customer = (Customer) repository.findUserByUsername(cus.getUsername());
 		if (customer.getLikedRecipes().size() != 0) {
 		for(Recipe recipe : customer.getLikedRecipes()) {
 			if (recipe.getApiId().equals(apiId)) {
