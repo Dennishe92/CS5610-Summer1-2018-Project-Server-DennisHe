@@ -119,27 +119,22 @@ public class WebUserService {
 		}
 	}
 	
-	@GetMapping("/api/profile")
-	public WebUser populateProfile(HttpServletResponse response, HttpServletRequest request) {
-		WebUser currentUser = (WebUser)session.getAttribute("currentUser");
-		
-		if (currentUser == null) {
-			response.setStatus(HttpServletResponse.SC_CONFLICT);
-			return null;
-		}
-		return currentUser;
-	}
+
 	
 	@PutMapping("/api/profile/{uid}")
 	public WebUser updateProfile(@RequestBody WebUser user, @PathVariable("uid") int uid, HttpServletResponse response) {
 		Optional<WebUser> current = repository.findById(uid);
 		
+		
 		if (current.isPresent()) {
+			
 			Customer cur = (Customer)(current.get());
 			cur.setUsername(user.getUsername());
 			cur.setPhone(user.getPhone());
 			cur.setEmail(user.getEmail());
+			cur.setAddress(user.getAddress());
 			repository.save(cur);
+			session.setAttribute("currentUser", cur);
 			return cur; 
 		}
 		response.setStatus(HttpServletResponse.SC_CONFLICT);
@@ -437,5 +432,17 @@ public class WebUserService {
 		}
 		response.setStatus(HttpServletResponse.SC_CONFLICT);
 		return null;
+	}
+	
+	@GetMapping("/api/profile")
+	public WebUser populateProfile(HttpServletResponse response) {
+		WebUser currentUser = (WebUser)session.getAttribute("currentUser");
+		
+		
+		if (currentUser == null) {
+			response.setStatus(HttpServletResponse.SC_CONFLICT);
+			return null;
+		}
+		return currentUser;
 	}
 }
