@@ -34,25 +34,43 @@ public class Seller extends WebUser {
 		}
 	}
 	
-	@ManyToMany(mappedBy="followedSellers")
+//	@ManyToMany(mappedBy="followedSellers")
+//	@JsonIgnore
+//	private List<Customer> followedCustomers = new ArrayList<>();
+//	
+//	public void followCustomer(Customer customer) {
+//		this.followedCustomers.add(customer);
+//		if(!customer.getFollowedSellers().contains(this)) {
+//			customer.getFollowedSellers().add(this);
+//		}
+//	}
+//	
+//	public List<Customer> getFollowedCustomers() {
+//		return this.followedCustomers;
+//	}
+//	
+//	public void disfollowCustomer(Customer customer) {
+//		if (this.followedCustomers.contains(customer)) {
+//			this.followedCustomers.remove(customer);
+//		}
+//	}
+	@OneToMany(mappedBy="seller")
 	@JsonIgnore
 	private List<Customer> followedCustomers = new ArrayList<>();
 	
 	public void followCustomer(Customer customer) {
-		this.followedCustomers.add(customer);
-		if(!customer.getFollowedSellers().contains(this)) {
-			customer.getFollowedSellers().add(this);
-		}
+	this.followedCustomers.add(customer);
+	customer.setFollowedSeller(this);
 	}
-	
-	public List<Customer> getFollowedCustomers() {
-		return this.followedCustomers;
+
+public List<Customer> getFollowedCustomers() {
+	return this.followedCustomers;
+}
+
+public void disfollowCustomer(Customer customer) {
+	if (this.followedCustomers.contains(customer)) {
+		this.followedCustomers.remove(customer);
 	}
-	
-	public void disfollowCustomer(Customer customer) {
-		if (this.followedCustomers.contains(customer)) {
-			this.followedCustomers.remove(customer);
-		}
-	}
+}
 
 }

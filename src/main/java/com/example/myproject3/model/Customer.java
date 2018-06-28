@@ -2,6 +2,7 @@ package com.example.myproject3.model;
 
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -57,6 +58,23 @@ public class Customer extends WebUser{
 		return orders;
 	}
 	
+	@ManyToOne()
+	@JsonIgnore
+	private Seller seller;
+	
+	public void setFollowedSeller(Seller seller) {
+		this.seller = seller;
+	}
+	
+	public Seller getFollowedSeller() {
+		return this.seller;
+	}	
+	
+	public void disfollowSeller(Seller seller) {
+		this.seller = null;
+	}
+
+	
 	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	@JoinTable(name="JOIN_CUSTOMER_RECIPE",
 	joinColumns=@JoinColumn(name="CUSTOMER_ID", referencedColumnName="ID"),
@@ -81,28 +99,28 @@ public class Customer extends WebUser{
 		}
 	}
 	
-	@ManyToMany
-	@JoinTable(name="JOIN_CUSTOMER_SELLER",
-	joinColumns=@JoinColumn(name="CUSTOMER_ID", referencedColumnName="ID"),
-	inverseJoinColumns=@JoinColumn(name="SELLER_ID", referencedColumnName="ID"))
-	@JsonIgnore
-	private List<Seller> followedSellers = new ArrayList<>();
-	
-	public List<Seller> getFollowedSellers() {
-		return this.followedSellers;
-	}
-	
-	public void followSeller(Seller seller) {
-		this.followedSellers.add(seller);
-		if (!seller.getFollowedCustomers().contains(this)) {
-			seller.getFollowedCustomers().add(this);
-		}
-	}
-	
-	public void disfollowSeller(Seller seller) {
-		if (this.followedSellers.contains(seller)) {
-			this.followedSellers.remove(seller);
-		}
-	}
+//	@ManyToMany
+//	@JoinTable(name="JOIN_CUSTOMER_SELLER",
+//	joinColumns=@JoinColumn(name="CUSTOMER_ID", referencedColumnName="ID"),
+//	inverseJoinColumns=@JoinColumn(name="SELLER_ID", referencedColumnName="ID"))
+//	@JsonIgnore
+//	private List<Seller> followedSellers = new ArrayList<>();
+//	
+//	public List<Seller> getFollowedSellers() {
+//		return this.followedSellers;
+//	}
+//	
+//	public void followSeller(Seller seller) {
+//		this.followedSellers.add(seller);
+//		if (!seller.getFollowedCustomers().contains(this)) {
+//			seller.getFollowedCustomers().add(this);
+//		}
+//	}
+//	
+//	public void disfollowSeller(Seller seller) {
+//		if (this.followedSellers.contains(seller)) {
+//			this.followedSellers.remove(seller);
+//		}
+//	}
 	
 }

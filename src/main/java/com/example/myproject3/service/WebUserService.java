@@ -181,6 +181,23 @@ public class WebUserService {
 		repository.save(customer);	
 	}
 
+//	@PostMapping("/api/customer/follow/seller/{sid}")
+//	public void followSellerByCustomer(@PathVariable("sid") int sid) {
+//		Customer customer = (Customer)session.getAttribute("currentUser");
+//		Optional<WebUser> seller1 = repository.findById(sid);
+//		System.out.println(customer);
+//		if (seller1.isPresent()) {
+//			Seller seller = (Seller)seller1.get();
+//			if (customer.getFollowedSellers().contains(seller)) {
+//				return;
+//			}
+//			customer.followSeller(seller);
+//			seller.followCustomer(customer);
+//			repository.save(seller);
+//			repository.save(customer);
+//		}
+//	}
+	
 	@PostMapping("/api/customer/follow/seller/{sid}")
 	public void followSellerByCustomer(@PathVariable("sid") int sid) {
 		Customer customer = (Customer)session.getAttribute("currentUser");
@@ -188,10 +205,7 @@ public class WebUserService {
 		System.out.println(customer);
 		if (seller1.isPresent()) {
 			Seller seller = (Seller)seller1.get();
-			if (customer.getFollowedSellers().contains(seller)) {
-				return;
-			}
-			customer.followSeller(seller);
+			customer.setFollowedSeller(seller);
 			seller.followCustomer(customer);
 			repository.save(seller);
 			repository.save(customer);
@@ -213,6 +227,22 @@ public class WebUserService {
 //		}
 //	}
 //	
+//	
+//	@DeleteMapping("/api/customer/{cid}/seller/{sid}")
+//	public void unfollowSellerByCustomer(@PathVariable("sid") int sid, @PathVariable("cid") int cid) {
+//		Optional<WebUser> cus1 = repository.findById(cid);
+//		Optional<WebUser> sel1 = repository.findById(sid);
+//		
+//		if (cus1.isPresent() && sel1.isPresent()) {
+//			Customer customer = (Customer)(cus1.get());
+//			Seller seller = (Seller)(sel1.get());
+//			customer.disfollowSeller(seller);
+//			seller.disfollowCustomer(customer);
+//			repository.save(customer);
+//			repository.save(seller);
+//		}
+//	}
+	
 	
 	@DeleteMapping("/api/customer/{cid}/seller/{sid}")
 	public void unfollowSellerByCustomer(@PathVariable("sid") int sid, @PathVariable("cid") int cid) {
