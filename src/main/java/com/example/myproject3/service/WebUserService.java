@@ -153,8 +153,8 @@ public class WebUserService {
 	
 	@PostMapping("/api/logout")
 	public void logout(HttpServletResponse response) {
-		this.session.invalidate();
-//		session.removeAttribute("currentUser");
+//		this.session.invalidate();
+		session.removeAttribute("currentUser");
 		response.setStatus(HttpServletResponse.SC_CONFLICT);
 	}	
 	
@@ -403,12 +403,12 @@ public class WebUserService {
 	
 	@GetMapping("/api/checklogin")
 	public void checkLogin(HttpServletResponse response) {
-		if (this.session == null) { // fixme
-			response.setStatus(HttpServletResponse.SC_CONFLICT);
-		}
-//		if (this.session.getAttribute("currentUser") == null) { // fixme
+//		if (this.session == null) { // fixme
 //			response.setStatus(HttpServletResponse.SC_CONFLICT);
 //		}
+		if (this.session.getAttribute("currentUser") == null) { // fixme
+			response.setStatus(HttpServletResponse.SC_CONFLICT);
+		}
 	}
 	
 	@GetMapping("/api/seller")
@@ -425,8 +425,17 @@ public class WebUserService {
 	}
 	
 	@GetMapping("/api/user/current")
-	public WebUser findCurrentUser() {
-		WebUser user = (WebUser)session.getAttribute("currentUser");
-		return user;
+	public WebUser findCurrentUser(HttpServletResponse response) {
+//		if (this.session != null) {
+//			WebUser user = (WebUser)session.getAttribute("currentUser");
+//			return user;
+//		}
+//		return null;
+		if (session.getAttribute("currentUser") != null) {
+			WebUser user = (WebUser)session.getAttribute("currentUser");
+			return user;
+		}
+		response.setStatus(HttpServletResponse.SC_CONFLICT);
+		return null;
 	}
 }
