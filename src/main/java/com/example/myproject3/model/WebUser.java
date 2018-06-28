@@ -15,6 +15,7 @@ public class WebUser {
 	private String password;
 	private String phone;
 	private String email;
+	private String address;
 	private String role;
 	
 	public void setRole(String role) {
@@ -23,6 +24,14 @@ public class WebUser {
 	
 	public String getRole() {
 		return this.role;
+	}
+	
+	public void setAddress(String address) {
+		this.address = address;
+	}
+	
+	public String getAddress() {
+		return this.address;
 	}
 	
 	public String getPhone() {
