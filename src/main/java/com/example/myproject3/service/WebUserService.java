@@ -153,8 +153,8 @@ public class WebUserService {
 	
 	@PostMapping("/api/logout")
 	public void logout(HttpServletResponse response) {
-//		this.session.invalidate();
-		session.removeAttribute("currentUser");
+		this.session.invalidate();
+//		session.removeAttribute("currentUser");
 		response.setStatus(HttpServletResponse.SC_CONFLICT);
 	}	
 	
@@ -373,12 +373,12 @@ public class WebUserService {
 	
 	@GetMapping("/api/checklogin")
 	public void checkLogin(HttpServletResponse response) {
-//		if (this.session == null) { // fixme
-//			response.setStatus(HttpServletResponse.SC_CONFLICT);
-//		}
-		if (this.session.getAttribute("currentUser") == null) { // fixme
+		if (this.session == null) { // fixme
 			response.setStatus(HttpServletResponse.SC_CONFLICT);
 		}
+//		if (this.session.getAttribute("currentUser") == null) { // fixme
+//			response.setStatus(HttpServletResponse.SC_CONFLICT);
+//		}
 	}
 	
 	@GetMapping("/api/seller")
@@ -386,7 +386,7 @@ public class WebUserService {
 		List<WebUser> users = (List<WebUser>)repository.findAll();
 		List<Seller> sellers = new ArrayList<>();
 		for (WebUser user : users) {
-			if (user.getRole() == "Seller") {
+			if (user.getRole().equals("Seller")) {
 				Seller  seller = (Seller)user;
 				sellers.add(seller);
 			}
