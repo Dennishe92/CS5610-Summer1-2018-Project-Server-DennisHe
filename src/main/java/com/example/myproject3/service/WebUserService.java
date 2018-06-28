@@ -152,8 +152,10 @@ public class WebUserService {
 //	}	
 	
 	@PostMapping("/api/logout")
-	public void logout() {
-		this.session.invalidate();
+	public void logout(HttpServletResponse response) {
+//		this.session.invalidate();
+		session.removeAttribute("currentUser");
+		response.setStatus(HttpServletResponse.SC_CONFLICT);
 	}	
 	
 	@Autowired
