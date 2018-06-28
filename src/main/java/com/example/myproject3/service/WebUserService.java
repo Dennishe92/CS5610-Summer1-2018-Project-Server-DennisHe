@@ -92,7 +92,7 @@ public class WebUserService {
 	@PostMapping("/api/login")
 	public WebUser login(@RequestBody WebUser user, HttpServletResponse response, HttpServletRequest request) {
 		WebUser res = repository.findUserByUsernameAndPassword(user.getUsername(), user.getPassword());
-		session = request.getSession();
+		session = request.getSession(true);
 		if (res != null) {
 			session.setAttribute("currentUser", res);
 			System.out.println("login success!" + session.getAttribute("currentUser"));
@@ -373,7 +373,10 @@ public class WebUserService {
 	
 	@GetMapping("/api/checklogin")
 	public void checkLogin(HttpServletResponse response) {
-		if (this.session == null) {
+//		if (this.session == null) { // fixme
+//			response.setStatus(HttpServletResponse.SC_CONFLICT);
+//		}
+		if (this.session.getAttribute("currentUser") == null) { // fixme
 			response.setStatus(HttpServletResponse.SC_CONFLICT);
 		}
 	}
