@@ -128,7 +128,7 @@ public class WebUserService {
 		
 		if (current.isPresent()) {
 			
-			Customer cur = (Customer)(current.get());
+			WebUser cur = current.get();
 			cur.setUsername(user.getUsername());
 			cur.setPhone(user.getPhone());
 			cur.setEmail(user.getEmail());
