@@ -22,6 +22,14 @@ public class Order {
 	private String customerFirstName;
 	private String customerLastName;
 	
+	public void setId(int id) {
+		this.id = id;
+	}
+	
+	public int getId() {
+		return this.id;
+	}	
+	
 	public String getCustomerFirstName() {
 		return this.customerFirstName;
 	}
@@ -38,7 +46,7 @@ public class Order {
 		this.customerLastName =customerLastName;
 	}
 	
-	@ManyToOne
+	@ManyToOne()
 	@JsonIgnore
 	private Customer customer;
 	
@@ -51,6 +59,11 @@ public class Order {
 			customer.getOrders().add(this);
 		}
 	}
+	
+	public Customer getCustomer() {
+		return this.customer;
+	}	
+
 	
 	@OneToMany(mappedBy="order")
 	@JsonIgnore
@@ -73,10 +86,7 @@ public class Order {
 		return this.products;
 	}
 	
-	
-	public Customer getCustomer() {
-		return this.customer;
-	}	
+
 	
 	@ManyToOne()
 	@JsonIgnore

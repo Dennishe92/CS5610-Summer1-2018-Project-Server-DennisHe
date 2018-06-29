@@ -286,30 +286,72 @@ public class WebUserService {
 		return null;
 	}
 	
+//	@GetMapping("/api/customer/{uid}/order")
+//	public Iterable<Order> findOrdersByCustomer(@PathVariable("uid") int uid) {
+//		Optional<WebUser> data = repository.findById(uid);
+//		if (data.isPresent()) {
+//			Customer customer = (Customer)(data.get());
+//			return customer.getOrders();
+//		}
+//		
+//		return null;
+//	}
+	
 	@GetMapping("/api/customer/{uid}/order")
 	public Iterable<Order> findOrdersByCustomer(@PathVariable("uid") int uid) {
 		Optional<WebUser> data = repository.findById(uid);
+		List<Order> res = new ArrayList<>();
+		Iterable<Order> orders = orderRepository.findAll();
 		if (data.isPresent()) {
 			Customer customer = (Customer)(data.get());
-			return customer.getOrders();
+			for (Order order : orders) {
+				if (order.getCustomerFirstName().equals(customer.getFirstName())
+						&& order.getCustomerLastName().equals(customer.getLastName())) {
+					res.add(order);
+				}
+			}
+			
+			return res;
 		}
 		
 		return null;
 	}
 	
-	@PostMapping("/api/customer/{uid}/order")
-	public void addOrderByCustomer(@PathVariable("uid") int uid, @RequestBody Order order) {
-		Optional<WebUser> data = repository.findById(uid);
-		if (data.isPresent()) {
-			Customer customer = (Customer)(data.get());
+//	@PostMapping("/api/customer/{uid}/order")
+//	public void addOrderByCustomer(@PathVariable("uid") int uid, @RequestBody Order order) {
+//		Optional<WebUser> data = repository.findById(uid);
+//		if (data.isPresent()) {
+//			Customer customer = (Customer)(data.get());
+//			if (customer.getOrders().contains(order)) {
+//				return;
+//			}
+////			customer.getOrders().add(order);
+//			System.out.println("I am here");
+//			customer.addOrder(order);
+//			order.setCustomer(customer);
+//			order.setCustomerFirstName(customer.getFirstName());
+//			order.setCustomerLastName(customer.getLastName());
+//		}
+//	}
+	
+	@PostMapping("/api/customer/order")
+	public void addOrderByCustomer(@RequestBody Order order) {
+		System.out.println(session.getAttribute("currentUser"));
+		Customer cus = (Customer)session.getAttribute("currentUser");
+		Customer customer = (Customer) repository.findUserByUsername(cus.getUsername());
 			if (customer.getOrders().contains(order)) {
 				return;
 			}
-			customer.getOrders().add(order);
+//			customer.getOrders().add(order);
+			System.out.println("I am here");
+			System.out.println(order);
+			customer.addOrder(order);
 			order.setCustomer(customer);
 			order.setCustomerFirstName(customer.getFirstName());
 			order.setCustomerLastName(customer.getLastName());
-		}
+			orderRepository.save(order);
+			repository.save(customer);
+			System.out.println(customer);
 	}
 
 	@Autowired
@@ -463,4 +505,6 @@ public class WebUserService {
 		}
 		return currentUser;
 	}
+	
+
 }
