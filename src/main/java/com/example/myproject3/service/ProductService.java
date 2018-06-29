@@ -24,10 +24,10 @@ public class ProductService {
 //		return productRepository.save(product);
 //	}
 //	
-//	@DeleteMapping("/api/product/{pid}")
-//	public void deleteProduct(@PathVariable("pid") int pid) {
-//		productRepository.deleteById(pid);
-//	}
+	@DeleteMapping("/api/product/{pid}")
+	public void deleteProduct(@PathVariable("pid") int pid) {
+		productRepository.deleteById(pid);
+	}
 	
 	@GetMapping("/api/products")
 	public Iterable<Product> findAllProducts() {
