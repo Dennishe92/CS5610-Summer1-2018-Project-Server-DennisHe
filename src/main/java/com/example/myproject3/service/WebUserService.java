@@ -359,6 +359,7 @@ public class WebUserService {
 		Optional<WebUser> data = repository.findById(uid);
 		if (data.isPresent()) {
 			Seller seller = (Seller)(data.get());
+			System.out.println(seller.getProducts().size());
 			return seller.getProducts();
 		}
 		
@@ -377,25 +378,41 @@ public class WebUserService {
 			if (seller.getProducts().contains(product)) {
 				return;
 			}
-			product.setSeller(seller);
-			product.setSellerName(seller.getUsername());
-			productRepository.save(product);
-			seller.addProduct(product);
+			Product tmp = new Product();
+			tmp.setName(product.getName());
+			tmp.setPrice(product.getPrice());
+			tmp.setSeller(seller);
+			tmp.setSellerName(seller.getUsername());
+			productRepository.save(tmp);
+			seller.addProduct(tmp);
 			repository.save(seller);
 		}
 	}
-
+//
 	@DeleteMapping("/api/seller/{uid}/product/{pid}")
 	public void deleteProductBySeller(@PathVariable("pid") int pid, @PathVariable int uid) {
-		Optional<WebUser> data = repository.findById(uid);
-		Optional<Product> product1 = productRepository.findById(pid);
-		if (product1.isPresent() && data.isPresent()) {
-			Product product = (Product)product1.get();
-			Seller seller = (Seller)(data.get());
-			seller.deleteProduct(product);
-			repository.save(seller);
-		}
+//		Optional<WebUser> data = repository.findById(uid);
+//		Optional<Product> product1 = productRepository.findById(pid);
+		productRepository.deleteById(pid);
+//		if (product1.isPresent() && data.isPresent()) {
+//			Product product = (Product)product1.get();
+//			Seller seller = (Seller)(data.get());
+//			seller.deleteProduct(product);
+//			repository.save(seller);
+//		}
 	}
+//	@DeleteMapping("/api/seller/{uid}/product/{name}")
+//	public void deleteProductBySeller(@PathVariable("uid") int uid, @PathVariable("name") String name) {
+//		System.out.println("i am good");
+//		Optional<WebUser> data = repository.findById(uid);
+////		Product product = productRepository.findProductByName(name);
+//		if (data.isPresent()) {
+//			System.out.println("i am bad");
+//			Seller seller = (Seller)(data.get());
+//			seller.deleteProduct(name);
+//			repository.save(seller);
+//		}
+//	}
 	
 	@GetMapping("/api/checklogin")
 	public void checkLogin(HttpServletResponse response) {

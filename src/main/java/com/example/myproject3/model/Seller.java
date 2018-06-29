@@ -28,10 +28,20 @@ public class Seller extends WebUser {
 		return products;
 	}
 	
+//	public void deleteProduct(Product product) {
+//		if (this.products.contains(product)) {
+//			this.products.remove(product);
+//		}
+//	}
+		
 	public void deleteProduct(Product product) {
-		if (this.products.contains(product)) {
-			this.products.remove(product);
+		for (Product p : this.products) {
+			if (p.getName() == product.getName()) {
+				this.products.remove(p);
+				return;
+			}
 		}
+		
 	}
 	
 //	@ManyToMany(mappedBy="followedSellers")

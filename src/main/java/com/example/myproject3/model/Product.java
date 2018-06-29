@@ -10,13 +10,20 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 public class Product {
-
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private int id;
 	private String name;
 	private String sellerName;
 	private int price;
+	
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	public int getId() {
+		return id;
+	}
 	
 	@ManyToOne()
 	@JsonIgnore
