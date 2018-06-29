@@ -19,11 +19,6 @@ public class ProductService {
 	@Autowired
 	ProductRepository productRepository;
 
-//	@PostMapping("/api/product")
-//	public Product createProduct(@RequestBody Product product) {
-//		return productRepository.save(product);
-//	}
-//	
 	@DeleteMapping("/api/product/{pid}")
 	public void deleteProduct(@PathVariable("pid") int pid) {
 		productRepository.deleteById(pid);

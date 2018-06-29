@@ -78,16 +78,6 @@ public class WebUserService {
 		repository.deleteById(id);
 	}
 	
-//	@PostMapping("/api/login")
-//	public WebUser login(@RequestBody WebUser user, HttpServletRequest request, HttpServletResponse response) {
-//		WebUser res = repository.findUserByUsernameAndPassword(user.getUsername(), user.getPassword());
-//		if (res != null) {
-//			request.getServletContext().setAttribute("currentUser", res);
-//			return res;
-//		} 
-//		response.setStatus(HttpServletResponse.SC_CONFLICT);
-//		return null;
-//	}
 	
 	@PostMapping("/api/login")
 	public WebUser login(@RequestBody WebUser user, HttpServletResponse response, HttpServletRequest request) {
@@ -141,14 +131,10 @@ public class WebUserService {
 		return null;
 	}
 		
-//	@PostMapping("/api/profile")
-//	public void logout(HttpServletRequest request) {
-//		request.getServletContext().removeAttribute("currentUser");
-//	}	
+
 	
 	@PostMapping("/api/logout")
 	public void logout(HttpServletResponse response) {
-//		this.session.invalidate();
 		session.removeAttribute("currentUser");
 		response.setStatus(HttpServletResponse.SC_CONFLICT);
 	}	
@@ -159,8 +145,6 @@ public class WebUserService {
 	@PostMapping("/api/customer/like/recipe/{apiId}")
 	public void likeRecipeByCustomer(@PathVariable("apiId") String apiId, HttpServletRequest request) {
 		Customer cus = (Customer)session.getAttribute("currentUser");
-//		System.out.println("hello");
-//		System.out.println(customer);
 		Customer customer = (Customer) repository.findUserByUsername(cus.getUsername());
 		if (customer.getLikedRecipes().size() != 0) {
 		for(Recipe recipe : customer.getLikedRecipes()) {
@@ -177,22 +161,6 @@ public class WebUserService {
 		repository.save(customer);	
 	}
 
-//	@PostMapping("/api/customer/follow/seller/{sid}")
-//	public void followSellerByCustomer(@PathVariable("sid") int sid) {
-//		Customer customer = (Customer)session.getAttribute("currentUser");
-//		Optional<WebUser> seller1 = repository.findById(sid);
-//		System.out.println(customer);
-//		if (seller1.isPresent()) {
-//			Seller seller = (Seller)seller1.get();
-//			if (customer.getFollowedSellers().contains(seller)) {
-//				return;
-//			}
-//			customer.followSeller(seller);
-//			seller.followCustomer(customer);
-//			repository.save(seller);
-//			repository.save(customer);
-//		}
-//	}
 	
 	@PostMapping("/api/customer/follow/seller/{sid}")
 	public void followSellerByCustomer(@PathVariable("sid") int sid) {
@@ -202,43 +170,12 @@ public class WebUserService {
 		if (seller1.isPresent()) {
 			Seller seller = (Seller)seller1.get();
 			customer.setFollowedSeller(seller);
+			customer.setFollowedSellerName(seller.getUsername());
 			seller.followCustomer(customer);
 			repository.save(seller);
 			repository.save(customer);
 		}
 	}
-	
-	
-//	@DeleteMapping("/api/customer/unfollow/seller/{sid}")
-//	public void unfollowSellerByCustomer(@PathVariable("sid") int sid) {
-//		Customer customer = (Customer)session.getAttribute("currentUser");
-//		Optional<WebUser> seller1 = repository.findById(sid);
-//		System.out.println(customer);
-//		if (seller1.isPresent()) {
-//			Seller seller = (Seller)seller1.get();
-//			customer.disfollowSeller(seller);
-//			seller.disfollowCustomer(customer);
-//			repository.save(seller);
-//			repository.save(customer);
-//		}
-//	}
-//	
-//	
-//	@DeleteMapping("/api/customer/{cid}/seller/{sid}")
-//	public void unfollowSellerByCustomer(@PathVariable("sid") int sid, @PathVariable("cid") int cid) {
-//		Optional<WebUser> cus1 = repository.findById(cid);
-//		Optional<WebUser> sel1 = repository.findById(sid);
-//		
-//		if (cus1.isPresent() && sel1.isPresent()) {
-//			Customer customer = (Customer)(cus1.get());
-//			Seller seller = (Seller)(sel1.get());
-//			customer.disfollowSeller(seller);
-//			seller.disfollowCustomer(customer);
-//			repository.save(customer);
-//			repository.save(seller);
-//		}
-//	}
-	
 	
 	@DeleteMapping("/api/customer/{cid}/seller/{sid}")
 	public void unfollowSellerByCustomer(@PathVariable("sid") int sid, @PathVariable("cid") int cid) {
@@ -254,26 +191,6 @@ public class WebUserService {
 			repository.save(seller);
 		}
 	}
-// fixme : use user id or not?
-//	@DeleteMapping("/api/customer/dislike/recipe/{rid}")
-//	public void dislikeRecipeByCustomer(@PathVariable("rid") int rid) {
-//		Customer customer = (Customer)session.getAttribute("currentUser");
-//		Optional<Recipe> recipe1 = recipeRepository.findById(rid);
-	
-//		if (recipe1.isPresent()) {
-//			Recipe recipe = (Recipe)recipe1.get();
-//			recipe.dislikeCustomer(customer);
-//			customer.dislikeRecipe(recipe);
-//			repository.save(customer);
-//			recipeRepository.save(recipe);
-//		}
-//	}	
-	
-//	@GetMapping("/api/customer/recipes")
-//	public Iterable<Recipe> findCustomerLikeRecipes(){
-//		Customer customer = (Customer)session.getAttribute("currentUser");
-//			return customer.getLikedRecipes();
-//	}
 	
 	@GetMapping("/api/customer/{uid}/recipe")
 	public Iterable<Recipe> findCustomerLikeRecipes(@PathVariable("uid") int uid){
@@ -286,16 +203,6 @@ public class WebUserService {
 		return null;
 	}
 	
-//	@GetMapping("/api/customer/{uid}/order")
-//	public Iterable<Order> findOrdersByCustomer(@PathVariable("uid") int uid) {
-//		Optional<WebUser> data = repository.findById(uid);
-//		if (data.isPresent()) {
-//			Customer customer = (Customer)(data.get());
-//			return customer.getOrders();
-//		}
-//		
-//		return null;
-//	}
 	
 	@GetMapping("/api/customer/{uid}/order")
 	public Iterable<Order> findOrdersByCustomer(@PathVariable("uid") int uid) {
@@ -317,22 +224,7 @@ public class WebUserService {
 		return null;
 	}
 	
-//	@PostMapping("/api/customer/{uid}/order")
-//	public void addOrderByCustomer(@PathVariable("uid") int uid, @RequestBody Order order) {
-//		Optional<WebUser> data = repository.findById(uid);
-//		if (data.isPresent()) {
-//			Customer customer = (Customer)(data.get());
-//			if (customer.getOrders().contains(order)) {
-//				return;
-//			}
-////			customer.getOrders().add(order);
-//			System.out.println("I am here");
-//			customer.addOrder(order);
-//			order.setCustomer(customer);
-//			order.setCustomerFirstName(customer.getFirstName());
-//			order.setCustomerLastName(customer.getLastName());
-//		}
-//	}
+
 	
 	@PostMapping("/api/customer/order")
 	public void addOrderByCustomer(@RequestBody Order order) {
@@ -433,35 +325,13 @@ public class WebUserService {
 //
 	@DeleteMapping("/api/seller/{uid}/product/{pid}")
 	public void deleteProductBySeller(@PathVariable("pid") int pid, @PathVariable int uid) {
-//		Optional<WebUser> data = repository.findById(uid);
-//		Optional<Product> product1 = productRepository.findById(pid);
 		productRepository.deleteById(pid);
-//		if (product1.isPresent() && data.isPresent()) {
-//			Product product = (Product)product1.get();
-//			Seller seller = (Seller)(data.get());
-//			seller.deleteProduct(product);
-//			repository.save(seller);
-//		}
 	}
-//	@DeleteMapping("/api/seller/{uid}/product/{name}")
-//	public void deleteProductBySeller(@PathVariable("uid") int uid, @PathVariable("name") String name) {
-//		System.out.println("i am good");
-//		Optional<WebUser> data = repository.findById(uid);
-////		Product product = productRepository.findProductByName(name);
-//		if (data.isPresent()) {
-//			System.out.println("i am bad");
-//			Seller seller = (Seller)(data.get());
-//			seller.deleteProduct(name);
-//			repository.save(seller);
-//		}
-//	}
+
 	
 	@GetMapping("/api/checklogin")
 	public void checkLogin(HttpServletResponse response) {
-//		if (this.session == null) { // fixme
-//			response.setStatus(HttpServletResponse.SC_CONFLICT);
-//		}
-		if (this.session.getAttribute("currentUser") == null) { // fixme
+		if (this.session.getAttribute("currentUser") == null) {
 			response.setStatus(HttpServletResponse.SC_CONFLICT);
 		}
 	}
@@ -481,11 +351,6 @@ public class WebUserService {
 	
 	@GetMapping("/api/user/current")
 	public WebUser findCurrentUser(HttpServletResponse response) {
-//		if (this.session != null) {
-//			WebUser user = (WebUser)session.getAttribute("currentUser");
-//			return user;
-//		}
-//		return null;
 		if (session.getAttribute("currentUser") != null) {
 			WebUser user = (WebUser)session.getAttribute("currentUser");
 			return user;
@@ -505,6 +370,5 @@ public class WebUserService {
 		}
 		return currentUser;
 	}
-	
 
 }

@@ -19,6 +19,15 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 public class Customer extends WebUser{
 	private String firstName;
 	private String lastName;
+	private String followedSellerName;
+	
+	public void setFollowedSellerName(String followedSellerName) {
+		this.followedSellerName = followedSellerName;
+	}
+	
+	public String getFollowedSellerName() {
+		return this.followedSellerName;
+	}
 	
 	public void setFirstName(String firstName) {
 		this.firstName = firstName;

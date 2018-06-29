@@ -27,47 +27,7 @@ public class RecipeService {
 	
 	@Autowired
 	WebUserRepository webUserRepository;
-	
-//	@PostMapping("/api/recipe/{rid}/customer/{cid}")
-//	public void likeCustomerInRecipe(@PathVariable("rid") int rid,
-//			@PathVariable("cid") int cid) {
-//		Optional<Recipe> recipe1 = recipeRepository.findById(rid);
-//		Optional<Customer> customer1 = customerRepository.findById(cid);
-//		if(recipe1.isPresent() && customer1.isPresent()) {
-//			Recipe recipe = recipe1.get();
-//			Customer customer = customer1.get();
-//			recipe.likeCustomer(customer);
-//			recipeRepository.save(recipe);
-//		}
-//	}
-	
-	// when customer like this recipe, save the customer into like list of the recipe
-//	@PostMapping("/api/recipe/{rid}/customer/{cid}")
-//	public void likeCustomerInRecipe(@PathVariable("rid") int rid,
-//			@PathVariable("cid") int cid) {
-//		Optional<Recipe> recipe1 = recipeRepository.findById(rid);
-//		Optional<WebUser> customer1 = webUserRepository.findById(cid);
-//		if(recipe1.isPresent() && customer1.isPresent()) {
-//			Recipe recipe = recipe1.get();
-//			Customer customer = (Customer)customer1.get();
-//			recipe.likeCustomer(customer);
-//			recipeRepository.save(recipe);
-//		}
-//	}
-//	
-//	@PostMapping("/api/customer/{cid}/{apiId}")
-//	public Recipe saveRecipeByCustomer(@PathVariable("apiId") int apiId, @PathVariable("cid") int cid) {
-//		Optional<WebUser> customer1 = webUserRepository.findById(cid);
-//		if(customer1.isPresent()) {
-//			Customer customer = (Customer)customer1.get();
-//			Recipe recipe = new Recipe();
-//			recipe.setApiId(apiId);
-//			recipe.likeCustomer(customer);
-//			recipeRepository.save(recipe);
-//		}
-//		
-//		return null;
-//	}
+
 	
 	@DeleteMapping("/api/recipe/{recipeId}")
 	public void deleteRecipe(@PathVariable("recipeId") int id) {
@@ -80,15 +40,4 @@ public class RecipeService {
 		return recipeRepository.findAll();
 	}
 	
-	// Return all customers who like this recipe
-//	@GetMapping("/api/recipe/{rid}/customer")
-//	public Iterable<Recipe> findCustomerLikeRecipes(@PathVariable("cid") int cid){
-//		Optional<WebUser> customer1 = webUserRepository.findById(cid);
-//		if(customer1.isPresent()) {
-//			Customer customer = (Customer)customer1.get();
-//			return customer.getLikedRecipes();
-//		}
-//		
-//		return null;
-//	}
 }

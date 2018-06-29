@@ -26,7 +26,6 @@ public class OrderService {
 	@Autowired
 	ProductRepository productRepository;
 	
-	// find all orders
 	@GetMapping("/api/order")
 	public Iterable<Order> findAllOrders() {
 		return orderRepository.findAll();
